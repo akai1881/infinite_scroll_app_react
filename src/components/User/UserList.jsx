@@ -1,4 +1,4 @@
-import React, { useState, useCallback, Suspense, memo } from 'react';
+import React, { useState, useCallback, Suspense, memo, useEffect } from 'react';
 
 import { fetchUsers } from '@api/userApi';
 import useInfiniteScroll from '@hooks/useInfiniteScroll';
@@ -32,7 +32,7 @@ const UserList = memo(() => {
      * @async
      * @function
      */
-    const loadMoreItems = useCallback(async () => {
+    const loadUsers = useCallback(async () => {
         setIsLoading(true);
         try {
             const newUsers = await fetchUsers(page);
@@ -45,8 +45,13 @@ const UserList = memo(() => {
         setIsLoading(false);
     }, [page]);
 
+    // load initial users
+    useEffect(() => {
+        loadUsers();
+    }, []);
+
     const { setLastElement, isFetching } = useInfiniteScroll({
-        loadMore: loadMoreItems,
+        loadMore: loadUsers,
         hasMore,
         isLoading,
         threshold: 0.2,
@@ -54,6 +59,8 @@ const UserList = memo(() => {
 
     return (
         <div className="space-y-4">
+            {error && <ErrorText text={error.message} />}
+            {isLoading && <LoadingSpinner className="mx-auto" />}
             <Suspense fallback={<LoadingSpinner className="mx-auto" />}>
                 {users.map((user, index) => (
                     <UserCard
@@ -63,7 +70,6 @@ const UserList = memo(() => {
                     />
                 ))}
                 {isFetching && <UserCardsLoader />}
-                {error && <ErrorText text={error.message} />}
             </Suspense>
         </div>
     );

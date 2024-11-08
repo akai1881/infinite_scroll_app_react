@@ -23,8 +23,8 @@ The **User List Application** displays an infinite-scroll feed of users, loading
 1. Clone the repository:
 
     ```bash
-    git clone https://github.com/your-username/user-feed-app.git
-    cd user-feed-app
+    git clone https://github.com/akai1881/infinite_scroll_app_react.git
+
     ```
 
 2. Install dependencies:

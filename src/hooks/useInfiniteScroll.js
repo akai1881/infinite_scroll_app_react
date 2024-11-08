@@ -24,7 +24,6 @@ function useInfiniteScroll({ loadMore, hasMore, isLoading, threshold = 1.0 }) {
     // State to indicate if the hook is fetching more items
     const [isFetching, setIsFetching] = useState(false);
     // State to track if this is the initial load of items
-    const [initialLoad, setInitialLoad] = useState(true);
 
     /**
      * Callback function to handle intersection events.
@@ -34,35 +33,21 @@ function useInfiniteScroll({ loadMore, hasMore, isLoading, threshold = 1.0 }) {
      */
     const handleIntersection = useCallback(
         ([entry]) => {
-            if (entry.isIntersecting && hasMore && !isLoading) {
+            if (entry.isIntersecting && hasMore && !isLoading && !isFetching) {
                 setIsFetching(true);
                 // Trigger load more action and set fetching to false upon completion
                 loadMore().finally(() => setIsFetching(false));
             }
         },
-        [hasMore, isLoading, loadMore]
+        [hasMore, isLoading, loadMore, isFetching]
     );
-
-    /**
-     * Effect for initial load of items. Triggers loadMore when the component mounts
-     * if there are more items to load and not currently loading.
-     */
-    useEffect(() => {
-        if (initialLoad && hasMore && !isLoading) {
-            setIsFetching(true);
-            loadMore().finally(() => {
-                setIsFetching(false);
-                setInitialLoad(false); // Prevents further initial loading
-            });
-        }
-    }, [initialLoad, hasMore, isLoading, loadMore]);
 
     /**
      * Effect to set up the Intersection Observer and observe the last element.
      * Re-observes the last element if it changes.
      */
     useEffect(() => {
-        if (isLoading) return;
+        if (isLoading || isFetching) return;
 
         const options = {
             root: null,
@@ -80,9 +65,10 @@ function useInfiniteScroll({ loadMore, hasMore, isLoading, threshold = 1.0 }) {
             // Clean up by unobserving the last element
             if (observerRef.current && currentElement) {
                 observerRef.current.unobserve(currentElement);
+                observerRef.current.disconnect();
             }
         };
-    }, [lastElement, threshold, handleIntersection, isLoading]);
+    }, [lastElement, threshold, handleIntersection, isLoading, isFetching]);
 
     return { setLastElement, isFetching };
 }
