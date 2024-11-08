@@ -1,4 +1,4 @@
-import React, { useState, useCallback, Suspense } from 'react';
+import React, { useState, useCallback, Suspense, memo } from 'react';
 
 import { fetchUsers } from '@api/userApi';
 import useInfiniteScroll from '@hooks/useInfiniteScroll';
@@ -16,7 +16,7 @@ const UserCard = React.lazy(() => import('@components/User/UserCard'));
  *
  * @returns {JSX.Element} The UserList component.
  */
-const UserList = () => {
+const UserList = memo(() => {
     const [users, setUsers] = useState([]);
     const [error, setError] = useState(null);
     const [page, setPage] = useState(1);
@@ -67,6 +67,6 @@ const UserList = () => {
             </Suspense>
         </div>
     );
-};
+});
 
 export default UserList;
