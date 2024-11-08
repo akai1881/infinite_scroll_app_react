@@ -45,7 +45,7 @@ export default [
         },
         settings: {
             react: {
-                version: 'detect', // Automatically detect the React version
+                version: 'detect',
             },
             'import/resolver': {
                 alias: {
@@ -58,7 +58,7 @@ export default [
                         ['@pages', './src/pages'],
                         ['@constants', './src/constants'],
                     ],
-                    extensions: ['.js', '.jsx', '.json'], // Specify file extensions
+                    extensions: ['.js', '.jsx', '.json'],
                 },
                 node: {
                     moduleDirectory: ['node_modules', 'src/'],
